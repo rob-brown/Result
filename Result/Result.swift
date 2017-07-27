@@ -46,7 +46,7 @@ public enum Result<T> {
         self = .Success({ value })
     }
     
-    public init(_ error: Error) {
+    public init(error: Error) {
         self = .Failure({ error })
     }
     

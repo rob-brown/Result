@@ -25,29 +25,29 @@
 import Foundation
 
 public enum Result<T> {
-    case Success(() -> T)
-    case Failure(() -> Error)
+    case success(() -> T)
+    case failure(() -> Error)
     
     public var value: T? {
         switch self {
-        case let .Success(value): return value()
-        case .Failure:            return nil
+        case let .success(value): return value()
+        case .failure:            return nil
         }
     }
     
     public var error: Error? {
         switch self {
-        case .Success:            return nil
-        case let .Failure(error): return error()
+        case .success:            return nil
+        case let .failure(error): return error()
         }
     }
     
     public init(_ value: T) {
-        self = .Success({ value })
+        self = .success({ value })
     }
     
     public init(error: Error) {
-        self = .Failure({ error })
+        self = .failure({ error })
     }
     
     public func map<U>(function: (T) -> U) -> Result<U> {
@@ -56,8 +56,8 @@ public enum Result<T> {
     
     public func lazyMap<U>(function: @escaping (T) -> U) -> Result<U> {
         switch self {
-        case let .Success(value): return .Success({ function(value()) })
-        case let .Failure(error): return .Failure(error)
+        case let .success(value): return .success({ function(value()) })
+        case let .failure(error): return .failure(error)
         }
     }
     
@@ -65,18 +65,18 @@ public enum Result<T> {
         return flatMap { value in
             do {
                 let newValue = try function(value)
-                return .Success({ newValue })
+                return .success({ newValue })
             }
             catch {
-                return .Failure({ error })
+                return .failure({ error })
             }
         }
     }
     
     public func flatMap<U>(function: (T) -> Result<U>) -> Result<U> {
         switch self {
-        case let .Success(value): return function(value())
-        case let .Failure(error): return .Failure(error)
+        case let .success(value): return function(value())
+        case let .failure(error): return .failure(error)
         }
     }
     
@@ -95,7 +95,7 @@ public func !=<T: Equatable>(lhs: Result<T>, rhs: Result<T>) -> Bool {
 
 public func ??<T>(lhs: Result<T>, rhs: Result<T>) -> Result<T> {
     switch lhs {
-    case .Success: return lhs
-    case .Failure: return rhs
+    case .success: return lhs
+    case .failure: return rhs
     }
 }
